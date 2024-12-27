@@ -16,7 +16,6 @@ public class JWTUtil {
     @Value("${jwt.expiration}")
     private long expiration;
 
-
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
@@ -28,23 +27,29 @@ public class JWTUtil {
     }
 
     public String getEmailFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return getAllClaimsFromToken(token).getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            return false;
+        } catch (ExpiredJwtException e) {
+            System.out.println("Token expirado");
+        } catch (MalformedJwtException e) {
+            System.out.println("Token mal formado");
+        } catch (UnsupportedJwtException e) {
+            System.out.println("Token no soportado");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Token vacío o nulo");
         }
+        return false;
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
-
-
-
-

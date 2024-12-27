@@ -1,6 +1,7 @@
 package com.microservices.users.application.dto;
 
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class UserRequestDTO {
@@ -25,7 +26,7 @@ public class UserRequestDTO {
      @NotBlank(message = "la contraseña es obligatoria")
      @Size(min=8, message = "la contraseña debe tener al menos 8 caracteres")
      String password;
-
+     @Valid
      List<PhoneRequestDTO> phones;
 }
 

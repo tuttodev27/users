@@ -2,33 +2,37 @@
 package com.microservices.users.domain.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "phones")
 public class Phone {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    @Column(name = "number", nullable = false)
-    String number;
+    @Column(nullable = false)
+    private String number;
 
-    @Column(name = "country_code", nullable = false)
-    String countryCode;
+    @Column(nullable = false)
+    private String cityCode;
 
-    @Column(name = "city_code", nullable = false)
-    String cityCode;
+    @Column(nullable = false)
+    private String countryCode;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    User user;
+    private User user;
 }
 

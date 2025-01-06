@@ -5,19 +5,16 @@ import com.microservices.users.application.dto.UserResponseDTO;
 import com.microservices.users.application.mapper.UserMapper;
 import com.microservices.users.domain.models.User;
 import com.microservices.users.domain.repository.UserRepository;
-
 import com.microservices.users.domain.service.UserValidatorService;
 import com.microservices.users.domain.service.exceptions.EmailAlreadyExistsException;
 import com.microservices.users.insfraestructure.util.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-
 public class UserApplicationService {
 
     private final UserValidatorService domainService;
@@ -25,25 +22,39 @@ public class UserApplicationService {
     private final UserMapper mapper;
     private final JWTUtil jwtUtil;
 
+    @Transactional
     public UserResponseDTO registerUser(UserRequestDTO request) {
 
+        // Validar email y contraseña
         domainService.validateEmail(request.getEmail());
         domainService.validatePassword(request.getPassword());
-        if (repository.findByEmail(request.getEmail()).isPresent()) {
-            throw new EmailAlreadyExistsException("El correo ya registrado");
+
+
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException("El correo ya está registrado.");
         }
+
+
         User user = mapper.userToDomain(request);
-        String token= jwtUtil.generateToken(request.getEmail());
-        user.setToken(token);
+
+
+        user.setToken(generateToken(request.getEmail()));
+
+
         repository.save(user);
+
 
         return mapper.domainToUserResponse(user);
     }
 
+
     public void processUser(UserRequestDTO request) {
         String userEmail = request.getEmail();
-        System.out.println("El correo es: "+userEmail);
+        System.out.println("El correo es: " + userEmail);
+    }
+
+
+    private String generateToken(String email) {
+        return jwtUtil.generateToken(email);
     }
 }
-
-

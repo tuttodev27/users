@@ -10,19 +10,20 @@ import java.util.UUID;
 @Component
 public class JWTUtil {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private final JWTConfig jwtConfig;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+    public JWTUtil(JWTConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+    }
+
 
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setId(UUID.randomUUID().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getExpiration()))
+                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecret())
                 .compact();
     }
 
@@ -32,7 +33,7 @@ public class JWTUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(jwtConfig.getSecret()).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
             System.out.println("Token expirado");
@@ -46,9 +47,9 @@ public class JWTUtil {
         return false;
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    public Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey(jwtConfig.getSecret())
                 .parseClaimsJws(token)
                 .getBody();
     }

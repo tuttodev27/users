@@ -1,44 +1,64 @@
 package com.microservices.users.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@Table(name = "users")
 public class User {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     UUID id;
-    @Column(name = "name", nullable = false)
-    String name;
-    @Column(name="email", nullable = false)
-    String email;
-    @Column(name="password", nullable = false)
-    String password;
-    @Column (name="created", nullable = false)
+
+    @Column(nullable = false, updatable = false)
     LocalDateTime created;
-    @Column (name = "modified", nullable = false)
+
+    @Column(nullable = false)
     LocalDateTime modified;
-    @Column (name = "lastLogin")
+
+    @Column(nullable = false)
     LocalDateTime lastLogin;
-    @Column(name = "token")
-     @JsonIgnore
+
+    @Column(nullable = false, unique = true)
+    String email;
+
+    @Column(nullable = false)
+    String password;
+
+    @Column(nullable = false)
     String token;
+
+    @Column(nullable = false)
     boolean isActive;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Phone> phones;
+    private List<Phone> phones = new ArrayList<>();
 
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
+        this.lastLogin = LocalDateTime.now();
+        this.isActive = true;
+    }
 
+    @PreUpdate
+    protected void onUpdate() {
+        this.modified = LocalDateTime.now();
+    }
 }

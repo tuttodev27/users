@@ -2,6 +2,9 @@ package com.microservices.users.insfraestructure.config;
 
 import com.microservices.users.insfraestructure.util.JWTUtil;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,22 +34,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 if (jwtUtil.validateToken(token)) {
-                    Claims claims = jwtUtil.getClaimsFromToken(token);
+                    Claims claims = jwtUtil.getAllClaimsFromToken(token);
                     String username = claims.getSubject();
+
+                    // Extraer roles si están en el token (opcional)
+                    ArrayList<String> roles = claims.get("roles", ArrayList.class);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             username,
                             null,
-                            new ArrayList<>() // Puedes incluir roles aquí si están en el token
+                            new ArrayList<>() // Reemplaza con la lista de roles si es necesario
                     );
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
-                    handleInvalidToken(response);
+                    respondWithUnauthorized(response, "Token inválido o expirado.");
                     return;
                 }
+            } catch (ExpiredJwtException e) {
+                respondWithUnauthorized(response, "Token expirado.");
+                return;
+            } catch (UnsupportedJwtException e) {
+                respondWithUnauthorized(response, "Token no soportado.");
+                return;
+            } catch (MalformedJwtException e) {
+                respondWithUnauthorized(response, "Token mal formado.");
+                return;
             } catch (Exception e) {
-                handleInvalidToken(response);
+                respondWithUnauthorized(response, "Error al validar el token.");
                 return;
             }
         }
@@ -54,9 +69,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void handleInvalidToken(HttpServletResponse response) throws IOException {
+
+    private void respondWithUnauthorized(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().write("{\"mensaje\": \"Token inválido o expirado\"}");
+        response.getWriter().write(String.format("{\"mensaje\": \"%s\"}", message));
     }
 }

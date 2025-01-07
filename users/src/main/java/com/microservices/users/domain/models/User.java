@@ -25,6 +25,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     UUID id;
 
+    @Column(nullable = false)
+    String name;
+
     @Column(nullable = false, updatable = false)
     LocalDateTime created;
 

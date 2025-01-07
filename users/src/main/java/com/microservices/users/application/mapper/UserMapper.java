@@ -23,6 +23,7 @@ public class UserMapper {
                 null,
                 null,
                 null,
+                null,
                 request.getEmail(),
                 request.getPassword(),
                 null,
@@ -40,7 +41,7 @@ public class UserMapper {
     public UserResponseDTO domainToUserResponse(User user) {
         return new UserResponseDTO(
                 user.getId(),
-                null,
+                user.getName(),
                 user.getEmail(),
                 mapPhonesToResponse(user.getPhones()),
                 user.getCreated(),

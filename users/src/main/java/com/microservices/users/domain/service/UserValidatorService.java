@@ -19,6 +19,7 @@ public class UserValidatorService {
             throw new InvalidEmailException(INVALID_EMAIL_MESSAGE);
         }
     }
+
     public void validatePassword(String password) {
         if (!StringUtils.hasText(password) || !password.matches(PASSWORD_PATTERN)) {
             throw new InvalidPasswordException(INVALID_PASSWORD_MESSAGE);

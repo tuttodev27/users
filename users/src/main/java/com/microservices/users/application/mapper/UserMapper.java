@@ -37,7 +37,6 @@ public class UserMapper {
         return user;
     }
 
-
     public UserResponseDTO domainToUserResponse(User user) {
         return new UserResponseDTO(
                 user.getId(),
@@ -51,9 +50,6 @@ public class UserMapper {
                 user.isActive()
         );
     }
-
-
-
 
     private List<Phone> mapPhonesToDomain(List<PhoneRequestDTO> phonesRequest, User user) {
         if (phonesRequest == null || phonesRequest.isEmpty()) {

@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhoneRequestDTO {
 
+
     @NotBlank(message = "El número de teléfono es obligatorio")
     @Pattern(regexp = "\\d{7,15}", message = "El número debe contener entre 7 y 15 dígitos")
     String number;

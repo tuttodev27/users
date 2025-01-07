@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("api/users")
 @Validated
@@ -19,11 +21,15 @@ public class UserController {
 
     private final UserApplicationService userApplicationService;
 
-
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO userResponseDTO = userApplicationService.registerUser(userRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
-    }
-}
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+        try {
+            UserResponseDTO userResponseDTO = userApplicationService.registerUser(userRequestDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
+        } catch (RuntimeException e) {
 
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+}

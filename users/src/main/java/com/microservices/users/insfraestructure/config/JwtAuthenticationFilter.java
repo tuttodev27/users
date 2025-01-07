@@ -37,13 +37,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Claims claims = jwtUtil.getAllClaimsFromToken(token);
                     String username = claims.getSubject();
 
-                    // Extraer roles si están en el token (opcional)
                     ArrayList<String> roles = claims.get("roles", ArrayList.class);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             username,
                             null,
-                            new ArrayList<>() // Reemplaza con la lista de roles si es necesario
+                            new ArrayList<>()
                     );
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -68,8 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
-
     private void respondWithUnauthorized(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");

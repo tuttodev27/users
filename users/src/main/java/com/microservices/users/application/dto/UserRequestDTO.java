@@ -9,7 +9,9 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-
+/**
+ * DTO para la creación de un nuevo usuario.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,11 +24,9 @@ public class UserRequestDTO {
      @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
      String name;
 
-
      @NotBlank(message = "El correo es obligatorio")
      @Email(message = "El formato del correo es inválido")
      String email;
-
 
      @NotBlank(message = "La contraseña es obligatoria")
      @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
@@ -35,5 +35,3 @@ public class UserRequestDTO {
      @Valid
      List<PhoneRequestDTO> phones;
 }
-
-

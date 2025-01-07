@@ -22,6 +22,7 @@ public class UserApplicationService {
     private final UserMapper mapper;
     private final JWTUtil jwtUtil;
 
+
     @Transactional
     public UserResponseDTO registerUser(UserRequestDTO request) {
 
@@ -29,21 +30,21 @@ public class UserApplicationService {
         domainService.validateEmail(request.getEmail());
         domainService.validatePassword(request.getPassword());
 
-
+        // Verificar si el email ya está registrado
         if (repository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("El correo ya está registrado.");
         }
 
-
+        // Mapear DTO a entidad de dominio
         User user = mapper.userToDomain(request);
 
-
+        // Generar token y asignarlo al usuario
         user.setToken(generateToken(request.getEmail()));
 
-
+        // Guardar el usuario en la base de datos
         repository.save(user);
 
-
+        // Mapear entidad a DTO de respuesta
         return mapper.domainToUserResponse(user);
     }
 
